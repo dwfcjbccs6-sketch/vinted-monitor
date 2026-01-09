@@ -5,28 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; }
+        body { font-family: -apple-system, sans-serif; padding: 20px; background: #f0f2f5; display: flex; align-items: center; height: 90vh; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); width: 100%; }
         h2 { color: #0088cc; text-align: center; margin-bottom: 20px; }
         input { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #0088cc; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        button { width: 100%; padding: 15px; background: #0088cc; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2>➕ Aggiungi Link</h2>
-        <input type="text" id="name" placeholder="Nome (es. Jordan 1)">
-        <input type="text" id="url" placeholder="Incolla URL Vinted filtrato">
-        <button onclick="send()">AVVIA MONITOR</button>
+        <h2>➕ Aggiungi Monitor</h2>
+        <input type="text" id="name" placeholder="Nome (es. Jordan 4 Retro)">
+        <input type="text" id="url" placeholder="Incolla l'URL filtrato di Vinted">
+        <button onclick="sendData()">ATTIVA MONITOR</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        function send() {
+        tg.expand();
+
+        function sendData() {
             const name = document.getElementById('name').value;
             const url = document.getElementById('url').value;
-            if(!name || !url) return alert("Compila tutti i campi!");
-            tg.sendData(JSON.stringify({ action: 'add', name, url }));
+
+            if (!name || !url) {
+                alert("Per favore, compila entrambi i campi!");
+                return;
+            }
+
+            // Invia i dati al bot
+            tg.sendData(JSON.stringify({
+                action: 'add',
+                name: name,
+                url: url
+            }));
+
+            // Chiude la Mini App
             tg.close();
         }
     </script>

@@ -5,83 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 15px; background: #f0f2f5; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h3 { margin: 0 0 15px 0; color: #0088cc; display: flex; justify-content: space-between; }
-        .count { font-size: 14px; color: #666; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn-add { background: #0088cc; color: white; margin-top: 10px; }
-        .btn-add:disabled { background: #ccc; }
-        .btn-del { background: #ff4757; color: white; padding: 5px 10px; width: auto; font-size: 12px; }
-        .link-item { background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .link-info { max-width: 70%; }
-        .link-info strong { display: block; color: #333; }
-        .link-info small { color: #888; word-break: break-all; }
+        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #0088cc; margin-top: 0; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h3>Aggiungi Ricerca <span class="count" id="counter">0/4</span></h3>
+        <h2>➕ Aggiungi Monitor</h2>
+        <p style="font-size: 13px; color: #666;">Inserisci i dettagli per avviare una nuova ricerca (Max 4).</p>
         <input type="text" id="name" placeholder="Nome ricerca (es. Jordan 4)">
-        <input type="text" id="url" placeholder="Incolla l'URL di Vinted">
-        <button id="addBtn" class="btn-add" onclick="addSearch()">ATTIVA MONITOR</button>
-    </div>
-
-    <div class="card">
-        <h3>Ricerche Attive</h3>
-        <div id="list"></div>
+        <input type="text" id="url" placeholder="Incolla URL Vinted filtrato">
+        <button onclick="send()">ATTIVA ORA</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-        let searches = JSON.parse(localStorage.getItem('vinted_v2') || '[]');
-
-        function updateUI() {
-            const list = document.getElementById('list');
-            const counter = document.getElementById('counter');
-            const addBtn = document.getElementById('addBtn');
-            
-            counter.innerText = `${searches.length}/4`;
-            addBtn.disabled = searches.length >= 4;
-            list.innerHTML = searches.length === 0 ? '<p style="text-align:center; color: #999;">Nessun monitor attivo</p>' : '';
-            
-            searches.forEach((s, i) => {
-                list.innerHTML += `
-                    <div class="link-item">
-                        <div class="link-info">
-                            <strong>${s.name}</strong>
-                            <small>${s.url.substring(0, 40)}...</small>
-                        </div>
-                        <button class="btn-del" onclick="removeSearch(${i})">ELIMINA</button>
-                    </div>`;
-            });
-            localStorage.setItem('vinted_v2', JSON.stringify(searches));
-        }
-
-        function addSearch() {
+        function send() {
             const name = document.getElementById('name').value;
             const url = document.getElementById('url').value;
-            if(!name || !url) return alert("Inserisci nome e URL");
-            if(searches.length >= 4) return alert("Limite massimo raggiunto");
-            
-            const data = { action: 'add', name, url };
-            searches.push(data);
-            tg.sendData(JSON.stringify(data));
-            document.getElementById('name').value = '';
-            document.getElementById('url').value = '';
-            updateUI();
+            if(!name || !url) return alert("Compila tutto!");
+            tg.sendData(JSON.stringify({ action: 'add', name, url }));
+            tg.close();
         }
-
-        function removeSearch(index) {
-            const removed = searches[index];
-            tg.sendData(JSON.stringify({ action: 'delete', name: removed.name }));
-            searches.splice(index, 1);
-            updateUI();
-        }
-
-        updateUI();
     </script>
 </body>
 </html>

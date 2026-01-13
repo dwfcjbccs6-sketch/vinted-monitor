@@ -2,34 +2,50 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; }
-        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        body { font-family: -apple-system, sans-serif; background: #f0f2f5; padding: 15px; }
+        .card { background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        h4 { margin: 0 0 15px 0; color: #0088cc; font-size: 18px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; }
+        .btn-add { background: #0088cc; color: white; }
+        .btn-del { background: #ff4d4d; color: white; margin-top: 10px; }
+        .label { font-size: 12px; color: #888; margin-bottom: 5px; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h3>➕ Nuovo Monitor</h3>
-        <input type="text" id="name" placeholder="Nome ricerca (es. Jordan 4)">
-        <input type="text" id="url" placeholder="URL Vinted filtrato">
-        <button onclick="send()">ATTIVA</button>
+        <h4>➕ Aggiungi Monitor</h4>
+        <input type="text" id="name" placeholder="Nome (es. Jordan 4)">
+        <input type="text" id="url" placeholder="Incolla l'URL di Vinted">
+        <button class="btn-add" onclick="send('add')">ATTIVA MONITOR</button>
+    </div>
+
+    <div class="card">
+        <h4>🗑️ Rimuovi Monitor</h4>
+        <div class="label">Inserisci il nome esatto usato per l'aggiunta</div>
+        <input type="text" id="delName" placeholder="Nome da eliminare">
+        <button class="btn-del" onclick="send('remove')">DISATTIVA MONITOR</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        function send() {
-            const name = document.getElementById('name').value;
+        function send(action) {
+            const nameField = action === 'add' ? 'name' : 'delName';
+            const name = document.getElementById(nameField).value;
             const url = document.getElementById('url').value;
-            if(!name || !url) return alert("Riempi i campi");
 
-            const payload = JSON.stringify({ action: 'add', name, url });
-            tg.sendData(payload); // Invia e chiude l'app
+            if (!name) {
+                alert("Inserisci il nome del monitor!");
+                return;
+            }
+            
+            tg.sendData(JSON.stringify({ action, name, url }));
+            tg.close();
         }
     </script>
 </body>
